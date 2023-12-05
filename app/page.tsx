@@ -129,8 +129,8 @@ export default function Home() {
         lastName: lastName,
         stateId: +stateId,
       }
-      if (seekingLicensure) body.licensureStateId = licensureStateId
-
+      if (seekingLicensure) body.licensureStateId = +licensureStateId
+      console.log(body)
       const res = await axios.post(
         'http://devinterview.motivohealth.com/submit',
         body
@@ -154,7 +154,7 @@ export default function Home() {
     <main>
       <section className='form-wrapper'>
         {signupStatus === 'successful' ? (
-          <p>Signup Successful!</p>
+          <h1 className='victory'>Signup Successful!</h1>
         ) : (
           <form
             className='form'
