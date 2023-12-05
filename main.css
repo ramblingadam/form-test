@@ -34,7 +34,6 @@ input[type='checkbox'] {
 
 label {
   display: block;
-  /* margin-bottom: 10px; */
 }
 
 label p {
@@ -60,18 +59,6 @@ input[type='checkbox'] {
   position: relative;
   display: none;
 }
-
-/* input[type='checkbox']:after {
-  content: '';
-  position: absolute;
-  left: -2px;
-  top: -2px;
-  height: 17px;
-  width: 17px;
-  border: 2px solid var(--mygray);
-  border-radius: 5px;
-  background-color: white;
-} */
 
 .custom-box {
   position: relative;

@@ -101,6 +101,7 @@ export default function Home() {
 
   const handleEmailChange = (e: any) => {
     setEmail(e.target.value)
+    setSignupStatus('pending')
   }
   const handleFirstNameChange = (e: any) => {
     setFirstName(e.target.value)
@@ -139,9 +140,6 @@ export default function Home() {
     } catch (error: any) {
       console.log(error)
       switch (error.response.status) {
-        // case 201:
-        //   setSignupStatus('successful')
-        //   break
         case 409:
           setSignupStatus('duplicateEmail')
           break
