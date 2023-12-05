@@ -1,0 +1,127 @@
+* {
+  --mygray: rgb(197, 197, 197);
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+h1 {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.form-wrapper {
+  border: 2px solid var(--mygray);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 448px;
+}
+
+input:not(input[type='checkbox']),
+select {
+  width: 100%;
+  padding: 5px;
+  border: 2px solid var(--mygray);
+  border-radius: 5px;
+}
+
+input[type='checkbox'] {
+}
+
+label {
+  display: block;
+  /* margin-bottom: 10px; */
+}
+
+label p {
+  margin-bottom: 5px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.seekingLicensureBox {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.seekingLicensureBox p {
+  margin-bottom: unset;
+  font-weight: unset;
+  /* margin-left: 15px; */
+}
+
+input[type='checkbox'] {
+  margin-right: 10px;
+  position: relative;
+  display: none;
+}
+
+/* input[type='checkbox']:after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  height: 17px;
+  width: 17px;
+  border: 2px solid var(--mygray);
+  border-radius: 5px;
+  background-color: white;
+} */
+
+.custom-box {
+  position: relative;
+  height: 17px;
+  width: 17px;
+  border: 2px solid var(--mygray);
+  border-radius: 5px;
+  background-color: white;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+input[type='checkbox']:checked + .custom-box:after {
+  content: '';
+  position: absolute;
+  height: 10px;
+  width: 6px;
+  border-right: 2px solid black;
+  border-bottom: 2px solid black;
+  left: 3px;
+  top: 0px;
+  transform: rotate(45deg);
+}
+
+footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 2px solid var(--mygray);
+  padding-top: 15px;
+  padding-left: unset;
+  padding-right: unset;
+}
+
+button {
+  color: white;
+  background-color: rgb(103, 144, 255);
+  padding: 12px 15px;
+  border-radius: 10px;
+}
+
+.form > * {
+  padding: 20px;
+}
+
+.row-name {
+  display: flex;
+  gap: 15px;
+}
+
+.warning {
+  color: red;
+  font-weight: unset;
+}

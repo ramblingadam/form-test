@@ -1,113 +1,269 @@
+'use client'
+
 import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import '../main.css'
+
+const states = {
+  1: 'Alabama',
+  2: 'Alaska',
+  3: 'Arizona',
+  4: 'Arkansas',
+  5: 'California',
+  6: 'Colorado',
+  7: 'Connecticut',
+  8: 'Delaware',
+  9: 'Florida',
+  10: 'Georgia',
+  11: 'Hawaii',
+  12: 'Idaho',
+  13: 'Illinois',
+  14: 'Indiana',
+  15: 'Iowa',
+  16: 'Kansas',
+  17: 'Kentucky',
+  18: 'Louisiana',
+  19: 'Maine',
+  20: 'Maryland',
+  21: 'Massachusetts',
+  22: 'Michigan',
+  23: 'Minnesota',
+  24: 'Mississippi',
+  25: 'Missouri',
+  26: 'Montana',
+  27: 'Nebraska',
+  28: 'Nevada',
+  29: 'New Hampshire',
+  30: 'New Jersey',
+  31: 'New Mexico',
+  32: 'New York',
+  33: 'North Carolina',
+  34: 'North Dakota',
+  35: 'Ohio',
+  36: 'Oklahoma',
+  37: 'Oregon',
+  38: 'Pennsylvania',
+  39: 'Rhode Island',
+  40: 'South Carolina',
+  41: 'South Dakota',
+  42: 'Tennessee',
+  43: 'Texas',
+  44: 'Utah',
+  45: 'Vermont',
+  46: 'Virginia',
+  47: 'Washington',
+  48: 'West Virginia',
+  49: 'Wisconsin',
+  50: 'Wyoming',
+}
+
+/*
+[
+  {id: id
+  name: statename}
+]
+
+*/
+
+const toArray = (obj: Record<string, string>) => {
+  const arr = []
+
+  for (let stateId in obj) {
+    arr.push({ id: stateId, name: obj[stateId] })
+  }
+
+  return arr
+}
 
 export default function Home() {
+  const [statesList, setStatesList] = useState(toArray(states))
+
+  const [seekingLicensure, setSeekingLicensure] = useState(false)
+
+  const [email, setEmail] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [stateId, setStateId] = useState('1')
+  const [licensureStateId, setLicensureStateId] = useState('1')
+
+  type signupStatusType =
+    | 'pending'
+    | 'successful'
+    | 'duplicateEmail'
+    | 'malformedResponse'
+
+  const [signupStatus, setSignupStatus] = useState<signupStatusType>('pending')
+
+  useEffect(() => {
+    console.log(statesList)
+  }, [statesList])
+
+  const handleEmailChange = (e: any) => {
+    setEmail(e.target.value)
+  }
+  const handleFirstNameChange = (e: any) => {
+    setFirstName(e.target.value)
+  }
+  const handleLastNameChange = (e: any) => {
+    setLastName(e.target.value)
+  }
+  const handleStateIdChange = (e: any) => {
+    setStateId(e.target.value)
+  }
+  const handleLicensureStateIdChange = (e: any) => {
+    setLicensureStateId(e.target.value)
+  }
+
+  const handleLicensureCheckboxChange = (e: any) => {
+    setSeekingLicensure(!seekingLicensure)
+  }
+
+  const handleFormSubmit = async (e: any) => {
+    try {
+      e.preventDefault()
+      const body: any = {
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        stateId: +stateId,
+      }
+      if (seekingLicensure) body.licensureStateId = licensureStateId
+
+      const res = await axios.post(
+        'http://devinterview.motivohealth.com/submit',
+        body
+      )
+
+      setSignupStatus('successful')
+    } catch (error: any) {
+      console.log(error)
+      switch (error.response.status) {
+        // case 201:
+        //   setSignupStatus('successful')
+        //   break
+        case 409:
+          setSignupStatus('duplicateEmail')
+          break
+        case 400:
+          setSignupStatus('malformedResponse')
+          break
+      }
+    }
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main>
+      <section className='form-wrapper'>
+        {signupStatus === 'successful' ? (
+          <p>Signup Successful!</p>
+        ) : (
+          <form
+            className='form'
+            onSubmit={handleFormSubmit}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+            <h1>Sign Up</h1>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+            <div className='row'>
+              <label>
+                <p>Email Address</p>
+                <input
+                  type='email'
+                  value={email}
+                  onChange={handleEmailChange}
+                  required={true}
+                ></input>
+                {email.length === 0 && (
+                  <p className='warning'>Please enter your email address.</p>
+                )}
+                {signupStatus === 'duplicateEmail' && (
+                  <p className='warning'>That email is already in use.</p>
+                )}
+              </label>
+            </div>
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+            <div className='row-name'>
+              <label>
+                <p>First Name</p>
+                <input
+                  type='text'
+                  value={firstName}
+                  onChange={handleFirstNameChange}
+                  required={true}
+                ></input>
+                {firstName.length === 0 && (
+                  <p className='warning'>Please enter your first name.</p>
+                )}
+              </label>
+              <label>
+                <p>Last Name</p>
+                <input
+                  type='text'
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                  required={true}
+                ></input>
+                {lastName.length === 0 && (
+                  <p className='warning'>Please enter your last name.</p>
+                )}
+              </label>
+            </div>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+            <div className='row'>
+              <label>
+                <p>State</p>
+                <select
+                  value={stateId}
+                  onChange={handleStateIdChange}
+                  required={true}
+                >
+                  {statesList.map((state) => (
+                    <option value={state.id}>{state.name}</option>
+                  ))}
+                </select>
+                {stateId.length === 0 && (
+                  <p className='warning'>Please select a state.</p>
+                )}
+              </label>
+            </div>
+            <div className='row'>
+              <label className='seekingLicensureBox'>
+                <input
+                  type='checkbox'
+                  checked={seekingLicensure}
+                  onChange={handleLicensureCheckboxChange}
+                ></input>
+                <div className='custom-box'></div>
+                <p>I'm seeking licensure in a different state</p>
+              </label>
+            </div>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+            {seekingLicensure && (
+              <div className='row'>
+                <label>
+                  <p>Licensure State</p>
+                  <select
+                    value={licensureStateId}
+                    onChange={handleLicensureStateIdChange}
+                    required={seekingLicensure}
+                  >
+                    {statesList.map((state) => (
+                      <option value={state.id}>{state.name}</option>
+                    ))}
+                  </select>
+                  {licensureStateId.length === 0 && (
+                    <p className='warning'>Please select a state.</p>
+                  )}
+                </label>
+              </div>
+            )}
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+            <footer>
+              <button>Save</button>
+            </footer>
+          </form>
+        )}
+      </section>
     </main>
   )
 }
