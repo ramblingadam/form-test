@@ -87,6 +87,14 @@ export default function Home() {
   const [stateId, setStateId] = useState('1')
   const [licensureStateId, setLicensureStateId] = useState('1')
 
+  const [hasFocusedEmail, setHasFocusedEmail] = useState(false)
+  const [hasFocusedFirstName, setHasFocusedFirstName] = useState(false)
+  const [hasFocusedLastName, setHasFocusedLastName] = useState(false)
+
+  const [hasBlurredEmail, setHasBlurredEmail] = useState(false)
+  const [hasBlurredFirstName, setHasBlurredFirstName] = useState(false)
+  const [hasBlurredLastName, setHasBlurredLastName] = useState(false)
+
   type signupStatusType =
     | 'pending'
     | 'successful'
@@ -95,9 +103,7 @@ export default function Home() {
 
   const [signupStatus, setSignupStatus] = useState<signupStatusType>('pending')
 
-  useEffect(() => {
-    console.log(statesList)
-  }, [statesList])
+  const [duplicateEmailResponse, setDuplicateEmailResponse] = useState('')
 
   const handleEmailChange = (e: any) => {
     setEmail(e.target.value)
@@ -130,7 +136,6 @@ export default function Home() {
         stateId: +stateId,
       }
       if (seekingLicensure) body.licensureStateId = +licensureStateId
-      console.log(body)
       const res = await axios.post(
         'http://devinterview.motivohealth.com/submit',
         body
@@ -138,10 +143,11 @@ export default function Home() {
 
       setSignupStatus('successful')
     } catch (error: any) {
-      console.log(error)
+      console.warn(error)
       switch (error.response.status) {
         case 409:
           setSignupStatus('duplicateEmail')
+          setDuplicateEmailResponse(error.response.data.errors.email)
           break
         case 400:
           setSignupStatus('malformedResponse')
@@ -162,47 +168,81 @@ export default function Home() {
           >
             <h1>Sign Up</h1>
 
-            <div className='row'>
+            <div className='row-with-warning'>
               <label>
                 <p>Email Address</p>
                 <input
+                  className={`${
+                    email.length === 0 && hasFocusedEmail && hasBlurredEmail
+                      ? 'warning-border'
+                      : ''
+                  }`}
                   type='email'
                   value={email}
                   onChange={handleEmailChange}
                   required={true}
+                  onFocus={() => setHasFocusedEmail(true)}
+                  onBlur={() => setHasBlurredEmail(true)}
                 ></input>
-                {email.length === 0 && (
+                {email.length === 0 && hasFocusedEmail && hasBlurredEmail ? (
                   <p className='warning'>Please enter your email address.</p>
-                )}
-                {signupStatus === 'duplicateEmail' && (
-                  <p className='warning'>That email is already in use.</p>
+                ) : signupStatus === 'duplicateEmail' ? (
+                  <p className='warning'>{duplicateEmailResponse}</p>
+                ) : (
+                  <p>&nbsp;</p>
                 )}
               </label>
             </div>
 
-            <div className='row-name'>
+            <div className='row-name row-with-warning'>
               <label>
                 <p>First Name</p>
                 <input
+                  className={`${
+                    firstName.length === 0 &&
+                    hasFocusedFirstName &&
+                    hasBlurredFirstName
+                      ? 'warning-border'
+                      : ''
+                  }`}
                   type='text'
                   value={firstName}
                   onChange={handleFirstNameChange}
                   required={true}
+                  onFocus={() => setHasFocusedFirstName(true)}
+                  onBlur={() => setHasBlurredFirstName(true)}
                 ></input>
-                {firstName.length === 0 && (
+                {firstName.length === 0 &&
+                hasFocusedFirstName &&
+                hasBlurredFirstName ? (
                   <p className='warning'>Please enter your first name.</p>
+                ) : (
+                  <p>&nbsp;</p>
                 )}
               </label>
               <label>
                 <p>Last Name</p>
                 <input
+                  className={`${
+                    lastName.length === 0 &&
+                    hasFocusedLastName &&
+                    hasBlurredLastName
+                      ? 'warning-border'
+                      : ''
+                  }`}
                   type='text'
                   value={lastName}
                   onChange={handleLastNameChange}
                   required={true}
+                  onFocus={() => setHasFocusedLastName(true)}
+                  onBlur={() => setHasBlurredLastName(true)}
                 ></input>
-                {lastName.length === 0 && (
+                {lastName.length === 0 &&
+                hasFocusedLastName &&
+                hasBlurredLastName ? (
                   <p className='warning'>Please enter your last name.</p>
+                ) : (
+                  <p>&nbsp;</p>
                 )}
               </label>
             </div>
@@ -215,8 +255,13 @@ export default function Home() {
                   onChange={handleStateIdChange}
                   required={true}
                 >
-                  {statesList.map((state) => (
-                    <option value={state.id}>{state.name}</option>
+                  {statesList.map((state, i) => (
+                    <option
+                      key={i}
+                      value={state.id}
+                    >
+                      {state.name}
+                    </option>
                   ))}
                 </select>
                 {stateId.length === 0 && (
@@ -245,8 +290,13 @@ export default function Home() {
                     onChange={handleLicensureStateIdChange}
                     required={seekingLicensure}
                   >
-                    {statesList.map((state) => (
-                      <option value={state.id}>{state.name}</option>
+                    {statesList.map((state, i) => (
+                      <option
+                        key={i}
+                        value={state.id}
+                      >
+                        {state.name}
+                      </option>
                     ))}
                   </select>
                   {licensureStateId.length === 0 && (
@@ -257,7 +307,17 @@ export default function Home() {
             )}
 
             <footer>
-              <button>Save</button>
+              <button
+                disabled={
+                  !(
+                    email.length > 0 &&
+                    firstName.length > 0 &&
+                    lastName.length > 0
+                  )
+                }
+              >
+                Save
+              </button>
             </footer>
           </form>
         )}

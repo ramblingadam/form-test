@@ -13,6 +13,7 @@ main {
 h1 {
   font-size: 1.25rem;
   font-weight: bold;
+  padding: 20px;
 }
 
 .form-wrapper {
@@ -30,11 +31,17 @@ select {
   border-radius: 5px;
 }
 
-input[type='checkbox'] {
+.row {
+  padding-bottom: 20px;
+}
+
+.row-with-warning {
+  padding-bottom: 10px;
 }
 
 label {
   display: block;
+  cursor: pointer;
 }
 
 label p {
@@ -91,6 +98,7 @@ footer {
   padding-top: 15px;
   padding-left: unset;
   padding-right: unset;
+  padding-bottom: 20px;
 }
 
 button {
@@ -98,10 +106,17 @@ button {
   background-color: rgb(103, 144, 255);
   padding: 12px 15px;
   border-radius: 10px;
+  border: 2px solid white;
+  transition: 0.3s;
+}
+
+button:enabled:hover {
+  border: 2px solid black;
 }
 
 .form > * {
-  padding: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .row-name {
@@ -114,8 +129,16 @@ button {
   font-weight: unset;
 }
 
+.warning-border {
+  border: 2px solid red !important;
+}
+
 .victory {
   padding: 20px;
   text-align: center;
   width: 100%;
+}
+
+button:disabled {
+  background-color: grey;
 }
